@@ -12,16 +12,16 @@ class App extends React.Component{
     }
   }
 
-  
+
 
 onAdd = () => {
   if(this.state.inputName){
     if(this.state.selectedFile){
 
     var fd = new FormData()
-    fd.append('name', this.state.inputName)
+    
     fd.append('check', this.state.selectedFile, this.state.selectedFile.name)
-    Axios.post('http://localhost:1101/upload',fd)
+    Axios.post('http://localhost:1101/uploadimage',fd)
     .then( res => {
       console.log(res)
       alert('success')
@@ -33,6 +33,10 @@ onAdd = () => {
     }
   }
     
+}
+
+renderProducts=() => {
+
 }
 
 

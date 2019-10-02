@@ -1,17 +1,18 @@
 var express = require('express')
 var bodyParser = require ('body-parser')
 var cors = require ('cors')
-var addProduct = require('./routers/authRouter')
+const db = require('./database/index')
 
 const app = express()
 const port = 1101
 var multer = require('multer')
-const Authrouter = require('./routers/Authrouter')
+var urlapi = 'http://localhost:1101/'
+
 
 app.use(bodyParser.json())
 app.use(cors())
-app.use('/files', express.static('uploads'))
-app.use (Authrouter)
+app.use('/files', express.static('uploads')) //untuk akses ke folder uploads
+
 app.get('/', (req, res) => {
     res.send('hehe')
 })
@@ -22,10 +23,8 @@ let multerStorageConfig = multer.diskStorage({
     },
 
     filename : (req,file,cb) => {
-        cb(null, `prd-${Date.now()}.${file.mimetype.split('/')[1]}`)
-        
-    }
-    
+        cb(null, `prd-${Date.now()}.${file.mimetype.split('/')[1]}`)  
+    }   
 })
 
 
@@ -44,15 +43,16 @@ let upload = multer({
     storage: multerStorageConfig,
     fileFilter: filterConfig
 })
-module.exports = upload
 
-app.use('/auth', Authrouter)
-// app.post('/uploadimage', upload.single('check'), (req,res) => {
-//     console.log(req)
-//     res.send('success')
-// })
 
-app.post('/addproduct',addProduct)
+
+app.post('/uploadimage', upload.single('check'), (req,res) => {
+    db.query(`insert into pictable (id,name,image) values (0,'test', '${urlapi}${req.file.path.replace('uploads','files')}')`, (err,result)=>{
+    console.log(req)
+    res.send(result)
+})
+})
+
 
 app.listen(port, () => console.log("Server up in port " + port))
 
